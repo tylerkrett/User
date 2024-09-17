@@ -13,7 +13,7 @@ const defaultState = {
 
 export function Users() {
   const [users] = api.user.getUsers.useSuspenseQuery();
-
+  const [newUser] = api.user.getLatestUser.useSuspenseQuery();
   const utils = api.useUtils();
   const [state, setState] = useState(defaultState);
   const createUser = api.user.create.useMutation({
@@ -25,10 +25,23 @@ export function Users() {
 
   return (
     <div className="w-full max-w-xs">
-      {users ? (
-        <p className="truncate">Your most recent user: {users.firstName}</p>
+      {newUser ? (
+        <p className="truncate">Your most recent user: {newUser?.firstName}</p>
       ) : (
         <p>You have no posts yet.</p>
+      )}
+      {users ? (
+        users.map((user) => {
+          return (
+            <>
+              <p className="truncate">
+                Your most recent user: {user.firstName}
+              </p>
+            </>
+          );
+        })
+      ) : (
+        <></>
       )}
       <form
         onSubmit={(e) => {
@@ -40,6 +53,7 @@ export function Users() {
         <input
           type="text"
           placeholder="First name"
+          required
           value={state.firstName}
           onChange={(e) => setState({ ...state, firstName: e.target.value })}
           className="w-full rounded-full px-4 py-2 text-black"
@@ -47,20 +61,23 @@ export function Users() {
         <input
           type="text"
           placeholder="Last name"
+          required
           value={state.lastName}
           onChange={(e) => setState({ ...state, lastName: e.target.value })}
           className="w-full rounded-full px-4 py-2 text-black"
         />
         <input
-          type="text"
+          type="email"
           placeholder="Email"
-          value={state.firstName}
+          required
+          value={state.email}
           onChange={(e) => setState({ ...state, email: e.target.value })}
           className="w-full rounded-full px-4 py-2 text-black"
         />
         <input
           type="text"
-          placeholder="Postcode"
+          placeholder="Address"
+          required
           value={state.address}
           onChange={(e) => setState({ ...state, address: e.target.value })}
           className="w-full rounded-full px-4 py-2 text-black"

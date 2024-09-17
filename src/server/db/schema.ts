@@ -24,8 +24,8 @@ export const users = createTable(
     id: serial("id").primaryKey(),
     firstName: varchar("first_name", { length: 256 }),
     lastName: varchar("last_name", { length: 256 }),
-    email: varchar("email", { length: 256 }),
-    address: varchar("address", { length: 256 }),
+    email: varchar("email"),
+    address: varchar("address"),
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
