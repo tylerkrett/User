@@ -18,19 +18,22 @@ import {
  */
 export const createTable = pgTableCreator((name) => `user_${name}`);
 
-export const posts = createTable(
-  "post",
+export const users = createTable(
+  "user",
   {
     id: serial("id").primaryKey(),
-    name: varchar("name", { length: 256 }),
+    firstName: varchar("first_name", { length: 256 }),
+    lastName: varchar("last_name", { length: 256 }),
+    email: varchar("email", { length: 256 }),
+    address: varchar("address", { length: 256 }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).$onUpdate(
-      () => new Date()
+      () => new Date(),
     ),
   },
   (example) => ({
-    nameIndex: index("name_idx").on(example.name),
-  })
+    nameIndex: index("name_idx").on(example.firstName),
+  }),
 );
