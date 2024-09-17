@@ -1,4 +1,5 @@
-import { eq } from "drizzle-orm";
+import { inArray } from "drizzle-orm";
+import { withCursorPagination } from "drizzle-pagination";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
@@ -28,11 +29,14 @@ export const userRouter = createTRPCRouter({
   delete: publicProcedure
     .input(
       z.object({
-        id: z.number().min(1),
+        ids: z.array(z.number()),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.db.delete(users).where(eq(users.id, input.id)).returning();
+      await ctx.db
+        .delete(users)
+        .where(inArray(users.id, input.ids))
+        .returning();
     }),
   getLatestUser: publicProcedure.query(async ({ ctx }) => {
     const users = await ctx.db.query.users.findFirst({
@@ -46,4 +50,35 @@ export const userRouter = createTRPCRouter({
     });
     return users ?? null;
   }),
+  getUsersPag: publicProcedure
+    .input(
+      z.object({
+        cursor: z.string().nullish(),
+        limit: z.number().min(1).max(50).default(5),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const data = await ctx.db.query.users.findMany(
+        withCursorPagination({
+          limit: input.limit,
+          cursors: [
+            [
+              users?.createdAt,
+              "desc",
+              input.cursor ? new Date(input.cursor) : undefined,
+            ],
+          ],
+        }),
+      );
+      return {
+        // return the data of posts for that user
+        data,
+        // return the next cursor
+        nextCursor: data.length
+          ? data.length
+            ? data[data.length - 1]?.createdAt.toISOString()
+            : null
+          : null,
+      };
+    }),
 });

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { api } from "~/trpc/react";
 
@@ -12,7 +12,20 @@ const defaultState = {
 };
 
 export function Users() {
-  const [users] = api.user.getUsers.useSuspenseQuery();
+  const {
+    data,
+    isLoading,
+    fetchNextPage,
+    isFetchingNextPage,
+    // fetching the posts from the route
+  } = api.user.getUsersPag.useInfiniteQuery(
+    // the input - empty because we don't need any
+    {},
+    {
+      // the cursor from where to start fetching the posts
+      getNextPageParam: (lastPage) => lastPage?.nextCursor,
+    },
+  );
   const [newUser] = api.user.getLatestUser.useSuspenseQuery();
   const utils = api.useUtils();
   const [state, setState] = useState(defaultState);
@@ -22,6 +35,11 @@ export function Users() {
       setState(defaultState);
     },
   });
+
+  const users = useMemo(
+    () => data?.pages.flatMap((page) => page.data) ?? [],
+    [data],
+  );
 
   return (
     <div className="w-full max-w-xs">
@@ -43,6 +61,19 @@ export function Users() {
       ) : (
         <></>
       )}
+      <button
+        onClick={async () => {
+          if (
+            data?.pages.length &&
+            data?.pages[data?.pages?.length - 1]?.nextCursor
+          )
+            await fetchNextPage();
+        }}
+      >
+        {data?.pages?.length && !data?.pages[data.pages?.length - 1]?.nextCursor
+          ? "fetch more"
+          : "No more to fetch buddy"}
+      </button>
       <form
         onSubmit={(e) => {
           e.preventDefault();
