@@ -9,7 +9,7 @@ export default async function Home() {
   void api.user.getLatestUser.prefetch();
   return (
     <HydrateClient>
-      <main className="grid grid-cols-2 bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
+      <main className="grid grid-cols-2 bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white max-lg:grid-cols-1">
         <div>
           <div className="sticky top-0 flex w-full flex-col items-center justify-center gap-12 px-4 py-16">
             <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">

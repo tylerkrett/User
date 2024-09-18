@@ -44,12 +44,14 @@ export const userRouter = createTRPCRouter({
     });
     return users ?? null;
   }),
-  getUser: publicProcedure.input(
-   z.object({id: z.number()})
-  ).query(async ({ input, ctx }) => {
-    const user = await ctx.db.query.users.findFirst({ where: (user, { eq }) => eq(user.id, input.id),})
-    return user ?? null;
-  }),
+  getUser: publicProcedure
+    .input(z.object({ id: z.number() }))
+    .query(async ({ input, ctx }) => {
+      const user = await ctx.db.query.users.findFirst({
+        where: (user, { eq }) => eq(user.id, input.id),
+      });
+      return user ?? null;
+    }),
   getUsers: publicProcedure
     .input(
       z.object({

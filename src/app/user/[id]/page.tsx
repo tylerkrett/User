@@ -1,9 +1,9 @@
 import { api } from "~/trpc/server";
 
-export default async function UserPage(props) {
-  const user = await api.user.getUser(  {id: Number(props.params.id) as number });
-
-  console.log(user, 'ok')
+export default async function UserPage(props: { params: { id: string } }) {
+  const user = await api.user.getUser({
+    id: Number(props.params.id) as number,
+  });
 
   return (
     <div className="flex h-full w-full flex-col items-center justify-center p-16">

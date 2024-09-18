@@ -17,7 +17,7 @@ export default function Users() {
   const store = useStore();
 
   return (
-    <div className="flex h-full w-full flex-col items-center justify-center p-16">
+    <div className="flex h-full w-full flex-col items-center justify-center p-16 max-lg:p-4">
       <Table>
         <TableCaption>A list of your humans/users.</TableCaption>
         <TableHeader>
@@ -37,8 +37,15 @@ export default function Users() {
               <TableCell>{user.email}</TableCell>
               <TableCell>{user.address}</TableCell>
               <TableCell className="text-right">
-                <Anchor href={`/user/${user.id}`} className="mr-4">View</Anchor>
-                <Button variant="destructive" onClick={() => store.deleteUser.mutate({ids: [user.id]})}>Delete</Button>
+                <Anchor href={`/user/${user.id}`} className="mr-4">
+                  View
+                </Anchor>
+                <Button
+                  variant="destructive"
+                  onClick={() => store.deleteUser.mutate({ ids: [user.id] })}
+                >
+                  Delete
+                </Button>
               </TableCell>
             </TableRow>
           ))}

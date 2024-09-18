@@ -11,11 +11,11 @@ export function useStore() {
         getNextPageParam: (lastPage) => lastPage?.nextCursor,
       },
     );
-    const deleteUser = api.user.delete.useMutation({
-      onSuccess: async () => {
-        await    await utils.user.invalidate();
-      },
-    })
+  const deleteUser = api.user.delete.useMutation({
+    onSuccess: async () => {
+      await await utils.user.invalidate();
+    },
+  });
   const users = useMemo(
     () => data?.pages.flatMap((page) => page.data) ?? [],
     [data],
